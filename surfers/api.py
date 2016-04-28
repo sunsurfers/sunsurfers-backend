@@ -1,0 +1,67 @@
+from django.contrib.auth import get_user_model
+
+from tastypie import fields
+from tastypie.resources import Bundle
+from tastypie.authorization import ReadOnlyAuthorization
+from tastypie.authentication import ApiKeyAuthentication
+from tastypie.contrib.gis.resources import ModelResource
+
+from surfers.models import LatestPoint
+
+
+class OwnerCanUpdate(ReadOnlyAuthorization):
+
+    def create_detail(self, object_list, bundle):
+        return bundle.obj.user == bundle.request.user
+
+    def update_detail(self, object_list, bundle):
+        return bundle.obj.user == bundle.request.user
+
+    def delete_detail(self, object_list, bundle):
+        return bundle.obj.user == bundle.request.user
+
+
+class LatestPointResource(ModelResource):
+
+    def obj_create(self, bundle, **kwargs):
+        return super().obj_create(bundle, user=bundle.request.user)
+
+    class Meta:
+        excludes = ['id']
+        list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['get', 'put', 'delete']
+        queryset = LatestPoint.objects.all()
+        authorization = OwnerCanUpdate()
+        authentication = ApiKeyAuthentication()
+
+    def dispatch(self, request_type, request, **kwargs):
+        if request_type == 'detail' and 'pk' in kwargs:
+            if not kwargs['pk'].isdigit():
+                try:
+                    kwargs['pk'] = LatestPoint.objects.get(user__username=kwargs['pk']).id
+                except LatestPoint.DoesNotExist:
+                    pass
+        return super().dispatch(request_type, request, **kwargs)
+
+    def detail_uri_kwargs(self, bundle_or_obj=None):
+        if isinstance(bundle_or_obj, Bundle):
+            obj = bundle_or_obj.obj
+        else:
+            obj = bundle_or_obj
+        return {'pk': obj.user.username}
+
+
+class UserResourceAuthorization(ReadOnlyAuthorization):
+    def update_detail(self, object_list, bundle):
+        return bundle.obj == bundle.request.user
+
+
+class UserResource(ModelResource):
+    latest_point = fields.ToOneField(LatestPointResource, 'latest_point',
+                                     null=True)
+
+    class Meta:
+        excludes = ['password', 'email', 'is_active', 'is_staff', 'is_superuser']
+        queryset = get_user_model().objects.all()
+        authorization = UserResourceAuthorization()
+        authentication = ApiKeyAuthentication()
