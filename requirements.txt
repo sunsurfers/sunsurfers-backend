@@ -1,5 +1,6 @@
+defusedxml
 django
 django-tastypie
-psycopg2
 lxml
-defusedxml
+psycopg2
+pyyaml
