@@ -4,10 +4,14 @@ sunsurfers:
     - postgres
     ports:
     - 8000:8000
+    environment:
+        POSTGRES_HOST: postgres
+        POSTGRES_USER: www-data
+        POSTGRES_PASSWORD: 'Dodjioj4swoa'
 
 postgres:
     image: mdillon/postgis
     environment:
         POSTGRES_DB: sunsurfers
         POSTGRES_USER: www-data
-        POSTGRES_PASSWORD: ''
+        POSTGRES_PASSWORD: 'Dodjioj4swoa'
