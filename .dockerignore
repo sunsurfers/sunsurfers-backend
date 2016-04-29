@@ -1,6 +1,5 @@
 venv
 .git
-local_settings.py
 **/*.pyc
 **/*~
 **/*.swp
