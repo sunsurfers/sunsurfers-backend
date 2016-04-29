@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
 from tastypie import fields
-from tastypie.resources import Bundle
+from tastypie.resources import Bundle, ALL
 from tastypie.authorization import ReadOnlyAuthorization
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.contrib.gis.resources import ModelResource
@@ -23,16 +23,25 @@ class OwnerCanUpdate(ReadOnlyAuthorization):
 
 class LatestPointResource(ModelResource):
 
-    def obj_create(self, bundle, **kwargs):
-        return super().obj_create(bundle, user=bundle.request.user)
-
     class Meta:
-        excludes = ['id']
-        list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['get', 'put', 'delete']
+
         queryset = LatestPoint.objects.all()
+
         authorization = OwnerCanUpdate()
         authentication = ApiKeyAuthentication()
+
+        list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['get', 'put', 'delete']
+
+        excludes = ['id']
+
+        filtering = {
+            'point': ALL,
+            'updated_at': ['gte', 'lt']
+        }
+
+    def obj_create(self, bundle, **kwargs):
+        return super().obj_create(bundle, user=bundle.request.user)
 
     def dispatch(self, request_type, request, **kwargs):
         if request_type == 'detail' and 'pk' in kwargs:
