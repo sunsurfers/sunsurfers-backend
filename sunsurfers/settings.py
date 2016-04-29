@@ -85,8 +85,15 @@ WSGI_APPLICATION = 'sunsurfers.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'sunsurfers',
-        'CONN_MAX_AGE': 0,
+        'NAME': os.environ.get('POSTGRES_DB', 'sunsurfers'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'CONN_MAX_AGE': (
+            int(os.environ['CONN_MAX_AGE'])
+            if 'CONN_MAX_AGE' in os.environ
+            else None
+        ),
     }
 }
 
