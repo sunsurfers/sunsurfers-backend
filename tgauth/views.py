@@ -35,7 +35,7 @@ def botapi(request, token):
                     'text': 'Что-то пошло не так, боту пришло сообщение из группы.',
                 })
 
-            if msg.get('text')[0] == '/':
+            if msg.get('text', '')[:1] == '/':
                 cmd = msg['text']
                 if cmd in COMMANDS:
                     try:
