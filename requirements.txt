@@ -4,6 +4,7 @@ django-tastypie
 lxml
 psycopg2
 pyyaml
+requests
 
 # deployment
 gunicorn
