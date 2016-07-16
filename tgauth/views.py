@@ -108,7 +108,7 @@ COMMANDS = {
 }
 
 
-def login(request, data):
-    username = signer.unsign(data, max_age=600)
+def login(request, token):
+    username = signer.unsign(token, max_age=600)
     auth.login(request, auth.get_user_model().objects.get(username=username))
     return redirect('map')
