@@ -84,6 +84,12 @@ def update_location(msg):
 
 def start_cmd(request, msg):
 
+    info = (
+        "Чтобы поделиться своим местоположением просто отправь его боту.\n"
+        "После этого оно появится на карте - https://%s\n"
+        "На текущий момент это всё ;-)."
+    ) % settings.TGAUTH_DOMAIN
+
     if msg['chat']['type'] != 'private':
         return JsonResponse({
             'method': 'sendMessage',
@@ -113,13 +119,19 @@ def start_cmd(request, msg):
 Для тебя создан новый аккаунт:
 Логин - {username}
 Пароль - {password}
-""".format(username=user.username, password=password),
+
+{info}
+""".format(username=user.username, password=password, info=info),
         })
 
     return JsonResponse({
         'method': 'sendMessage',
         'chat_id': msg['chat']['id'],
-        'text': 'Какие люди! :-) Привет, @%s!' % user.username,
+        'text': (
+            'Какие люди! :-) Привет, @{username}!\n'
+            'Напоминаю правила! :-)\n'
+            '{info}'
+        ).format(username=user.username, info=info),
     })
 
 
