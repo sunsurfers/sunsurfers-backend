@@ -2,6 +2,7 @@ defusedxml
 django
 django-tastypie
 geojson
+emoji
 lxml
 psycopg2
 pyyaml

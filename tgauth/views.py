@@ -1,6 +1,8 @@
 import json
 import logging
 
+import emoji
+
 from django.conf import settings
 from django.contrib import auth
 from django.core.urlresolvers import reverse
@@ -13,6 +15,10 @@ from tgauth.auth import signer
 from surfers.models import LatestPoint
 
 logger = logging.getLogger(__name__)
+
+
+def emojize(msg):
+    return emoji.emojize(msg, use_aliases=True)
 
 
 @csrf_exempt
@@ -87,9 +93,9 @@ def start_cmd(request, msg):
     info = (
         "Текущий адрес карты - https://%s\n\n"
         "Чтобы получить доступ - отправь /login\n\n"
-        "Чтобы поделиться своим местоположением просто отправь его боту."
+        "Чтобы поделиться своим местоположением просто отправь его боту. "
         "После этого оно появится на карте.\n\n"
-        "На текущий момент это всё :pray:"
+        "На текущий момент это всё! :pray:"
     ) % settings.TGAUTH_DOMAIN
 
     if msg['chat']['type'] != 'private':
@@ -117,23 +123,23 @@ def start_cmd(request, msg):
         return JsonResponse({
             'method': 'sendMessage',
             'chat_id': msg['chat']['id'],
-            'text': """Добро пожаловать в Sunsurfers Map! :pray:
+            'text': emojize("""Добро пожаловать в Sunsurfers Map! :pray:
 Для тебя создан новый аккаунт:
 Логин - {username}
 Пароль - {password}
 
 {info}
-""".format(username=user.username, password=password, info=info),
+""".format(username=user.username, password=password, info=info)),
         })
 
     return JsonResponse({
         'method': 'sendMessage',
         'chat_id': msg['chat']['id'],
-        'text': (
-            'Какие люди! :-) Привет, @{username}!\n'
-            'Напоминаю правила! :-)\n'
+        'text': emojize((
+            'Какие люди! :-) Привет, @{username}!\n\n'
+            'Напоминаю правила! :-)\n\n'
             '{info}'
-        ).format(username=user.username, info=info),
+        ).format(username=user.username, info=info)),
     })
 
 
