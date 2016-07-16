@@ -22,12 +22,22 @@ def botapi(request, token):
     if request.method == 'POST':
         update = json.loads(request.body.decode(request.encoding or 'utf-8'))
         if 'message' in update:
-            if update['message']['text'] in COMMANDS:
-                return COMMANDS[update['message']['text']](request, update)
+            msg = update['message']
+            if msg['text'] in COMMANDS:
+                try:
+                    return COMMANDS[msg['text']](request, update)
+                except:
+                    logger.error("Can't process command %s:",
+                                 msg['text'], exc_info=True)
+                    return JsonResponse({
+                        'method': 'sendMessage',
+                        'chat_id': msg['chat']['id'],
+                        'text': 'Something went wrong...',
+                    })
             else:
                 return JsonResponse({
                     'method': 'sendMessage',
-                    'chat_id': update['chat']['id'],
+                    'chat_id': msg['chat']['id'],
                     'text': 'No such command',
                 })
         else:
@@ -81,7 +91,7 @@ def login_cmd(request, update):
         reply.append("")
 
     reply.append("Ссылка для входа на сайт (действует 10 минут): %s" % reverse(
-        ".login", args=signer.sign()
+        ".login", args=signer.sign(user.username)
     ))
 
     return JsonResponse({
@@ -97,6 +107,6 @@ COMMANDS = {
 
 
 def login(request, data):
-    user_id = signer.unsign(data, max_age=600)
-    auth.login(request, auth.get_user_model().objects.get(id=user_id))
+    username = signer.unsign(data, max_age=600)
+    auth.login(request, auth.get_user_model().objects.get(username=username))
     return redirect('map')
