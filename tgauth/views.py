@@ -193,5 +193,9 @@ COMMANDS = {
 
 
 def login(request, token):
-    auth.login(request, auth.authenticate(token=token))
-    return redirect('/')
+    user = auth.authenticate(token=token)
+    if user.is_authenticated():
+        auth.login(request, user)
+        return redirect('/')
+    else:
+        return HttpResponseNotFound()

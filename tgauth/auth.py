@@ -19,10 +19,10 @@ class TokenBackend(object):
                 username = signer.unsign(token, max_age=600)
                 logger.info("Authenticated %s", username)
                 return get_user_model().objects.get(username=username)
-            except BadSignature:
-                logger.warning("Bad token: %s", token, exc_info=True)
             except SignatureExpired:
                 logger.info("Expired signature: %s", token)
+            except BadSignature:
+                logger.warning("Bad token: %s", token, exc_info=True)
 
         return None
 
