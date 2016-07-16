@@ -8,12 +8,14 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseNotFound, HttpResponseNotAllowed
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
 
 
 logger = logging.getLogger(__name__)
 signer = TimestampSigner()
 
 
+@csrf_exempt
 def botapi(request, token):
     if token != settings.TGAUTH_TOKEN:
         return HttpResponseNotFound()
