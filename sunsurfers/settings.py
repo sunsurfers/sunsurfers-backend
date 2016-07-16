@@ -141,3 +141,9 @@ TASTYPIE_FULL_DEBUG = True
 
 TGAUTH_DOMAIN = os.environ['TGAUTH_DOMAIN']
 TGAUTH_TOKEN = os.environ['TGAUTH_TOKEN']
+
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'tgauth.auth.TokenBackend',
+]

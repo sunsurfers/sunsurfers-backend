@@ -2,17 +2,17 @@ import json
 import logging
 
 from django.conf import settings
+from django.contrib.auth import authenticate
 from django.contrib import auth
-from django.core.signing import TimestampSigner
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseNotFound, HttpResponseNotAllowed
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 
+from tgauth.auth import signer
 
 logger = logging.getLogger(__name__)
-signer = TimestampSigner()
 
 
 @csrf_exempt
@@ -109,6 +109,5 @@ COMMANDS = {
 
 
 def login(request, token):
-    username = signer.unsign(token, max_age=600)
-    auth.login(request, auth.get_user_model().objects.get(username=username))
-    return redirect('map')
+    auth.login(request, authenticate(token=token))
+    return redirect('/')
