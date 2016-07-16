@@ -41,27 +41,26 @@ def botapi(request, token):
                     'text': 'Что-то пошло не так, боту пришло сообщение из группы.',
                 })
 
-            if msg.get('text', '')[:1] == '/':
-                cmd = msg['text']
-                if cmd in COMMANDS:
-                    try:
+            try:
+                if msg.get('text', '')[:1] == '/':
+                    cmd = msg['text']
+                    if cmd in COMMANDS:
                         return COMMANDS[cmd](request, msg)
-                    except:
-                        logger.error("Can't process command %s:",
-                                     msg['text'], exc_info=True)
+                    else:
                         return JsonResponse({
                             'method': 'sendMessage',
                             'chat_id': msg['chat']['id'],
-                            'text': 'Something went wrong during %s command.' % cmd,
+                            'text': 'No such command',
                         })
-                else:
-                    return JsonResponse({
-                        'method': 'sendMessage',
-                        'chat_id': msg['chat']['id'],
-                        'text': 'No such command',
-                    })
-            elif 'location' in msg:
-                return update_location(msg)
+                elif 'location' in msg:
+                    return update_location(msg)
+            except:
+                logger.error("Failed processing %s:", msg, exc_info=True)
+                return JsonResponse({
+                    'method': 'sendMessage',
+                    'chat_id': msg['chat']['id'],
+                    'text': 'Что-то пошло не так, сообщите администратору.',
+                })
 
         else:
             logger.error("Unsupported update: %s", update)
