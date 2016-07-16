@@ -75,7 +75,10 @@ def update_location(msg):
     return JsonResponse({
         'method': 'sendMessage',
         'chat_id': msg['chat']['id'],
-        'text': 'Ваше местоположение обновлено!',
+        'text': (
+            'Ваше местоположение обновлено!'
+            'https://%s'
+        ) % settings.TGAUTH_DOMAIN,
     })
 
 
