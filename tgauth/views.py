@@ -23,8 +23,10 @@ def emojize(msg):
 
 @csrf_exempt
 def botapi(request, token):
+
     if token != settings.TGAUTH_TOKEN:
         return HttpResponseNotFound()
+
     if request.method == 'POST':
 
         update = json.loads(request.body.decode(request.encoding or 'utf-8'))
@@ -102,8 +104,7 @@ def update_location(msg):
         'method': 'sendMessage',
         'chat_id': msg['chat']['id'],
         'text': (
-            'Ваше местоположение обновлено!'
-            'https://%s'
+            'Ваше местоположение обновлено! https://%s'
         ) % settings.TGAUTH_DOMAIN,
     })
 
