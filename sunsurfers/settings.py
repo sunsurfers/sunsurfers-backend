@@ -149,8 +149,6 @@ AUTHENTICATION_BACKENDS = [
 
 MAPBOX_TOKEN = os.environ.get("MAPBOX_TOKEN")
 
-import os
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
