@@ -1,6 +1,10 @@
-from django.contrib.auth import get_user_model
-from django.core.signing import TimestampSigner
+import logging
 
+from django.contrib.auth import get_user_model
+from django.core.signing import TimestampSigner, BadSignature
+
+
+logger = logging.getLogger(__name__)
 
 signer = TimestampSigner()
 
@@ -8,9 +12,19 @@ signer = TimestampSigner()
 class TokenBackend(object):
 
     def authenticate(self, token=None):
+
         if token:
-            username = signer.unsign(token, max_age=600)
+
+            try:
+                username = signer.unsign(token, max_age=600)
+            except BadSignature as e:
+                logger.warning("Bad token: %s", token, exc_info=True)
+                return None
+
+            logger.info("Authenticated %s", username)
+
             return get_user_model().objects.get(username=username)
+
         return None
 
     def get_user(self, user_id):
