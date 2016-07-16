@@ -20,7 +20,7 @@ def botapi(request, token):
     if token != settings.TGAUTH_TOKEN:
         return HttpResponseNotFound()
     if request.method == 'POST':
-        update = json.loads(request.body)
+        update = json.loads(request.body.decode(request.encoding))
         if 'message' in update and update['message']['text'] in COMMANDS:
             return COMMANDS[update['message']['text']](request, update)
         else:
