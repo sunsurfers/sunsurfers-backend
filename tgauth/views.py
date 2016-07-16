@@ -21,14 +21,17 @@ def botapi(request, token):
         return HttpResponseNotFound()
     if request.method == 'POST':
         update = json.loads(request.body.decode(request.encoding or 'utf-8'))
-        if 'message' in update and update['message']['text'] in COMMANDS:
-            return COMMANDS[update['message']['text']](request, update)
+        if 'message' in update:
+            if update['message']['text'] in COMMANDS:
+                return COMMANDS[update['message']['text']](request, update)
+            else:
+                return JsonResponse({
+                    'method': 'sendMessage',
+                    'chat_id': update['chat']['id'],
+                    'text': 'No such command',
+                })
         else:
-            return JsonResponse({
-                'method': 'sendMessage',
-                'chat_id': update['chat']['id'],
-                'text': 'No such command',
-            })
+            logger.error("Unsupported update: %s", update)
     else:
         return HttpResponseNotAllowed()
 
@@ -47,7 +50,7 @@ def login_cmd(request, update):
 
     user_info = msg['from']
 
-    if msg['type'] != 'private':
+    if msg['chat']['type'] != 'private':
         return JsonResponse({
             'method': 'sendMessage',
             'chat_id': update['chat']['id'],
