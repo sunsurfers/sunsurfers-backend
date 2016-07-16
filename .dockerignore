@@ -1,5 +1,7 @@
+README.md
 venv
 .git
+.env
 **/*.pyc
 **/*~
 **/*.swp
