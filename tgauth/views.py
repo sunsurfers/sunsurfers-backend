@@ -164,6 +164,10 @@ def start_cmd(request, msg):
     return JsonResponse({
         'method': 'sendMessage',
         'chat_id': msg['chat']['id'],
+        'keyboard': [[{
+            'text': 'Поделиться местоположением',
+            'request_location': True,
+        }]],
         'text': emojize((
             'Какие люди! :-) Привет, @{username}!\n\n'
             'Напоминаю правила! :-)\n\n'
