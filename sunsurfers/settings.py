@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ofez@^kq#$k3i7^j7&9%r3ng#vt-$ev!zuu5t0!1%uh8iyvjgy'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'surfers',
     'quests',
+    'tgauth',
 
     'tastypie',
 
@@ -137,3 +138,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 TASTYPIE_FULL_DEBUG = True
+
+TGAUTH_DOMAIN = os.environ['TGAUTH_DOMAIN']
+TGAUTH_TOKEN = os.environ['TGAUTH_TOKEN']

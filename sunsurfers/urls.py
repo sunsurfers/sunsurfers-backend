@@ -29,4 +29,5 @@ v1_api.register(UserResource())
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include(v1_api.urls)),
+    url(r'^tg/', include('tgauth.urls')),
 ]

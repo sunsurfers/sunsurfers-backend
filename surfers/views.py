@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def sunmap(request):
+    return render('sunmap.html', users=[])
