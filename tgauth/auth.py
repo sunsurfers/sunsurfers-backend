@@ -1,7 +1,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from django.core.signing import TimestampSigner, BadSignature
+from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 
 
 logger = logging.getLogger(__name__)
@@ -17,13 +17,12 @@ class TokenBackend(object):
 
             try:
                 username = signer.unsign(token, max_age=600)
-            except BadSignature as e:
+                logger.info("Authenticated %s", username)
+                return get_user_model().objects.get(username=username)
+            except BadSignature:
                 logger.warning("Bad token: %s", token, exc_info=True)
-                return None
-
-            logger.info("Authenticated %s", username)
-
-            return get_user_model().objects.get(username=username)
+            except SignatureExpired:
+                logger.info("Expired signature: %s", token)
 
         return None
 
