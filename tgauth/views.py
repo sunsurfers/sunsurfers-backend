@@ -6,7 +6,8 @@ import emoji
 from django.conf import settings
 from django.contrib import auth
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseNotFound, HttpResponseNotAllowed
+from django.http import Http404
+from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +26,7 @@ def emojize(msg):
 def botapi(request, token):
 
     if token != settings.TGAUTH_TOKEN:
-        return HttpResponseNotFound()
+        raise Http404()
 
     if request.method == 'POST':
 
@@ -198,4 +199,4 @@ def login(request, token):
         auth.login(request, user)
         return redirect('/')
     else:
-        return HttpResponseNotFound()
+        raise Http404()
