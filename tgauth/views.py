@@ -91,7 +91,7 @@ def login_cmd(request, update):
         reply.append("")
 
     reply.append("Ссылка для входа на сайт (действует 10 минут): %s" % reverse(
-        ".login", args=signer.sign(user.username)
+        "login", args=(signer.sign(user.username),)
     ))
 
     return JsonResponse({
