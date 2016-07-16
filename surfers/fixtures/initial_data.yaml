@@ -12,9 +12,3 @@
     date_joined: 2016-04-29 00:31:35.050988+00:00
     groups: []
     user_permissions: []
-- model: tastypie.apikey
-  pk: 1
-  fields:
-    user: [admin]
-    key: admin
-    created: 2016-04-29 00:31:35+00:00

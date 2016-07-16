@@ -73,7 +73,11 @@ def update_location(msg):
 
     user = auth.get_user_model().objects.get(username=msg['from']['username'])
 
-    lp, created = LatestPoint.objects.get_or_create(user=user)
+    try:
+        lp = LatestPoint.objects.get(user=user)
+    except LatestPoint.DoesNotExist:
+        lp = LatestPoint(user=user)
+
     lp.point = 'POINT(%s %s)' % (msg['location']['longitude'],
                                  msg['location']['latitude'])
     lp.save()
