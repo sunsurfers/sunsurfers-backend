@@ -44,6 +44,7 @@ def botapi(request, token):
                 })
 
             try:
+
                 if msg.get('text', '')[:1] == '/':
                     cmd = msg['text']
                     if cmd in COMMANDS:
@@ -54,8 +55,17 @@ def botapi(request, token):
                             'chat_id': msg['chat']['id'],
                             'text': 'No such command',
                         })
+
                 elif 'location' in msg:
                     return update_location(msg)
+
+                else:
+                    return JsonResponse({
+                        'method': 'sendMessage',
+                        'chat_id': msg['chat']['id'],
+                        'text': 'Обновление статуса пока не реализовано! :-)',
+                    })
+
             except:
                 logger.error("Failed processing %s:", msg, exc_info=True)
                 return JsonResponse({
