@@ -1,6 +1,7 @@
 defusedxml
 django
 django-tastypie
+geojson
 lxml
 psycopg2
 pyyaml

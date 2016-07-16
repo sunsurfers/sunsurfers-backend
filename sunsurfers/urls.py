@@ -16,14 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib.gis import admin
 
-from tastypie.api import Api
-
-from surfers.api import LatestPointResource, UserResource
-
-
-v1_api = Api(api_name='v1')
-v1_api.register(LatestPointResource())
-v1_api.register(UserResource())
+from surfers.api import v1_api
 
 
 urlpatterns = [

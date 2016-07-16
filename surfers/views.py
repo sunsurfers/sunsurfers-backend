@@ -1,12 +1,14 @@
 from datetime import timedelta
 from functools import wraps
 
+import geojson
+
 from django.conf import settings
-from django.core.serializers import serialize
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 
+from surfers import api
 from surfers.models import LatestPoint
 
 
@@ -32,7 +34,15 @@ def latest(request):
     points = LatestPoint.objects.filter(
         updated_at__gt=timezone.now() - timedelta(days=14),
     ).order_by('-updated_at')[:100]
-    return HttpResponse(serialize(
-        'geojson', points, geometry_field='point',
-        fields=('user.username', 'updated_at')
-    ), content_type='application/json')
+    collection = geojson.FeatureCollection([
+        geojson.Feature(
+            geometry=geojson.Point(i.point.coords),
+            properties={
+                'user': i.user.get_full_name(),
+                'user_url': api.user.get_resource_uri(i.user),
+                'updated_at': i.updated_at.isoformat(),
+            }
+        )
+        for i in points
+    ])
+    return HttpResponse(geojson.dumps(collection), content_type='application/json')

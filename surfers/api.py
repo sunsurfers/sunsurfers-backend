@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
 
 from tastypie import fields
-from tastypie.resources import Bundle, ALL
+from tastypie.api import Api
+from tastypie.authentication import SessionAuthentication
 from tastypie.authorization import ReadOnlyAuthorization
-from tastypie.authentication import ApiKeyAuthentication
 from tastypie.contrib.gis.resources import ModelResource
+from tastypie.resources import Bundle, ALL
 
 from surfers.models import LatestPoint
 
@@ -28,7 +29,7 @@ class LatestPointResource(ModelResource):
         queryset = LatestPoint.objects.all()
 
         authorization = OwnerCanUpdate()
-        authentication = ApiKeyAuthentication()
+        authentication = SessionAuthentication()
 
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'put', 'delete']
@@ -73,4 +74,12 @@ class UserResource(ModelResource):
         excludes = ['password', 'email', 'is_active', 'is_staff', 'is_superuser']
         queryset = get_user_model().objects.all()
         authorization = UserResourceAuthorization()
-        authentication = ApiKeyAuthentication()
+        authentication = SessionAuthentication()
+
+
+latest_point = LatestPointResource()
+user = UserResource()
+
+v1_api = Api(api_name='v1')
+v1_api.register(latest_point)
+v1_api.register(user)

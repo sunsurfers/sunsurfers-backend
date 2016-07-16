@@ -8,6 +8,7 @@ class LatestPoint(models.Model):
     point = models.PointField(geography=True)
 
     class Meta:
+        ordering = ['-updated_at']
         verbose_name_plural = 'Latest Point'
 
 
