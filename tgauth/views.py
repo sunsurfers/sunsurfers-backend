@@ -29,6 +29,8 @@ def botapi(request, token):
 
         update = json.loads(request.body.decode(request.encoding or 'utf-8'))
 
+        logger.info("Got update: %s", update)
+
         if 'message' in update:
 
             msg = update['message']
@@ -64,6 +66,11 @@ def botapi(request, token):
 
         else:
             logger.error("Unsupported update: %s", update)
+            return JsonResponse({
+                'method': 'sendMessage',
+                'chat_id': msg['chat']['id'],
+                'text': emojize('Бот не понимает сообщения такого типа :confused:'),
+            })
     else:
         return HttpResponseNotAllowed()
 
