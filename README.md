@@ -3,7 +3,7 @@ Sunsurfers
 
 We are the Sunsurfers, we live in the current moment - everyday, anytime. This
 application helps us to explore the world, to connect to each other, to be kind,
-to make love and good deeds.
+to make a good deeds.
 
 What's that about? It is about travelling, adventures, inspiration and
 self-realization.
