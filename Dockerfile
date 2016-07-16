@@ -7,8 +7,8 @@ RUN apt update \
     python3-dev \
     python3-pip \
     libgeos-dev \
-    libpq-dev \
-    libxml2-dev libxslt-dev \
+    python3-psycopg2 \
+    python3-lxml \
  && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONPATH=/usr/src/app
