@@ -145,6 +145,13 @@ def start_cmd(request, msg):
         return JsonResponse({
             'method': 'sendMessage',
             'chat_id': msg['chat']['id'],
+            'reply_markup': {
+                'keyboard': [[{
+                    'text': 'Поделиться местоположением',
+                    'request_location': True,
+                }]],
+                'resize_keyboard': True,
+            },
             'text': emojize("""Добро пожаловать в Sunsurfers Map! :pray:
 Для тебя создан новый аккаунт:
 Логин - {username}
