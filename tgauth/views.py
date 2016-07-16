@@ -25,7 +25,7 @@ def botapi(request, token):
             msg = update['message']
             if msg['text'] in COMMANDS:
                 try:
-                    return COMMANDS[msg['text']](request, update)
+                    return COMMANDS[msg['text']](request, msg)
                 except:
                     logger.error("Can't process command %s:",
                                  msg['text'], exc_info=True)
@@ -46,15 +46,13 @@ def botapi(request, token):
         return HttpResponseNotAllowed()
 
 
-def login_cmd(request, update):
-
-    msg = update['message']
+def login_cmd(request, msg):
 
     if 'from' not in msg:
         logger.error("Got message from without 'from'!")
         return JsonResponse({
             'method': 'sendMessage',
-            'chat_id': update['chat']['id'],
+            'chat_id': msg['chat']['id'],
             'text': 'Что-то пошло не так, боту пришло сообщение из группы.',
         })
 
@@ -63,7 +61,7 @@ def login_cmd(request, update):
     if msg['chat']['type'] != 'private':
         return JsonResponse({
             'method': 'sendMessage',
-            'chat_id': update['chat']['id'],
+            'chat_id': msg['chat']['id'],
             'text': 'Эта команда должна быть отправлена личным сообщением, '
                     'а не публично в группе.',
         })
@@ -96,7 +94,7 @@ def login_cmd(request, update):
 
     return JsonResponse({
         'method': 'sendMessage',
-        'chat_id': update['chat']['id'],
+        'chat_id': msg['chat']['id'],
         'text': '\n'.join(reply),
     })
 
