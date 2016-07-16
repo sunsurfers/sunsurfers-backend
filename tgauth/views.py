@@ -194,7 +194,7 @@ COMMANDS = {
 
 def login(request, token):
     user = auth.authenticate(token=token)
-    if user.is_authenticated():
+    if user is not None:
         auth.login(request, user)
         return redirect('/')
     else:
