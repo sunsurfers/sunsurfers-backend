@@ -2,7 +2,6 @@ import json
 import logging
 
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.contrib import auth
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseNotFound, HttpResponseNotAllowed
@@ -11,6 +10,7 @@ from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from tgauth.auth import signer
+from surfers.models import LatestPoint
 
 logger = logging.getLogger(__name__)
 
@@ -20,41 +20,70 @@ def botapi(request, token):
     if token != settings.TGAUTH_TOKEN:
         return HttpResponseNotFound()
     if request.method == 'POST':
+
         update = json.loads(request.body.decode(request.encoding or 'utf-8'))
+
         if 'message' in update:
+
             msg = update['message']
-            if msg['text'] in COMMANDS:
-                try:
-                    return COMMANDS[msg['text']](request, msg)
-                except:
-                    logger.error("Can't process command %s:",
-                                 msg['text'], exc_info=True)
-                    return JsonResponse({
-                        'method': 'sendMessage',
-                        'chat_id': msg['chat']['id'],
-                        'text': 'Something went wrong...',
-                    })
-            else:
+
+            if 'from' not in msg:
+                logger.error("Got message from without 'from': %s", msg)
                 return JsonResponse({
                     'method': 'sendMessage',
                     'chat_id': msg['chat']['id'],
-                    'text': 'No such command',
+                    'text': 'Что-то пошло не так, боту пришло сообщение из группы.',
                 })
+
+            if msg.get('text')[0] == '/':
+                cmd = msg['text']
+                if cmd in COMMANDS:
+                    try:
+                        return COMMANDS[cmd](request, msg)
+                    except:
+                        logger.error("Can't process command %s:",
+                                     msg['text'], exc_info=True)
+                        return JsonResponse({
+                            'method': 'sendMessage',
+                            'chat_id': msg['chat']['id'],
+                            'text': 'Something went wrong during %s command.' % cmd,
+                        })
+                else:
+                    return JsonResponse({
+                        'method': 'sendMessage',
+                        'chat_id': msg['chat']['id'],
+                        'text': 'No such command',
+                    })
+            elif 'location' in msg:
+                return update_location(msg)
+
         else:
             logger.error("Unsupported update: %s", update)
     else:
         return HttpResponseNotAllowed()
 
 
-def login_cmd(request, msg):
+def update_location(msg):
 
-    if 'from' not in msg:
-        logger.error("Got message from without 'from'!")
-        return JsonResponse({
-            'method': 'sendMessage',
-            'chat_id': msg['chat']['id'],
-            'text': 'Что-то пошло не так, боту пришло сообщение из группы.',
-        })
+    user = auth.get_user_model().objects.get(msg['from']['username'])
+
+    try:
+        lp = LatestPoint.objects.get(user=user)
+    except LatestPoint.DoesNotExists:
+        lp = LatestPoint(user=user)
+
+    l = msg['location']
+    lp.point = 'POINT(%s %s)' % (l['longitude'], l['latitude'])
+    lp.save()
+
+    return JsonResponse({
+        'method': 'sendMessage',
+        'chat_id': msg['chat']['id'],
+        'text': 'Ваше местоположение обновлено!',
+    })
+
+
+def start_cmd(request, msg):
 
     user_info = msg['from']
 
@@ -88,6 +117,34 @@ def login_cmd(request, msg):
         reply.append("Пароль - %s" % password)
         reply.append("")
 
+        return JsonResponse({
+            'method': 'sendMessage',
+            'chat_id': msg['chat']['id'],
+            'text': '\n'.join(reply),
+        })
+
+    return JsonResponse({
+        'method': 'sendMessage',
+        'chat_id': msg['chat']['id'],
+        'text': 'Какие люди! :-) Привет, @%s!' % user.username,
+    })
+
+
+def login_cmd(request, msg):
+
+    user_info = msg['from']
+
+    if msg['chat']['type'] != 'private':
+        return JsonResponse({
+            'method': 'sendMessage',
+            'chat_id': msg['chat']['id'],
+            'text': 'Эта команда должна быть отправлена личным сообщением, '
+                    'а не публично в группе.',
+        })
+
+    user = auth.get_user_model().objects.get(username=user_info['username'])
+
+    reply = []
     reply.append("Ссылка для входа на сайт (действует 10 минут):")
     reply.append("https://{domain}{url}".format(
         domain=settings.TGAUTH_DOMAIN,
@@ -105,9 +162,10 @@ def login_cmd(request, msg):
 
 COMMANDS = {
     '/login': login_cmd,
+    '/start': start_cmd,
 }
 
 
 def login(request, token):
-    auth.login(request, authenticate(token=token))
+    auth.login(request, auth.authenticate(token=token))
     return redirect('/')
