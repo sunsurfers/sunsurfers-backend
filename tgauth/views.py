@@ -58,7 +58,9 @@ def login_cmd(request, update):
                     'а не публично в группе.',
         })
 
-    user, created = auth.get_user_model().get_or_create(username=user_info['username'])
+    user, created = auth.get_user_model().objects.get_or_create(
+        username=user_info['username']
+    )
 
     reply = []
 
