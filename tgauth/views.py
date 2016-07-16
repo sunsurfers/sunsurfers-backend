@@ -88,8 +88,12 @@ def login_cmd(request, msg):
         reply.append("Пароль - %s" % password)
         reply.append("")
 
-    reply.append("Ссылка для входа на сайт (действует 10 минут): %s" % reverse(
-        "login", args=(signer.sign(user.username),)
+    reply.append("Ссылка для входа на сайт (действует 10 минут):")
+    reply.append("https://{domain}{url}".format(
+        domain=settings.TGAUTH_DOMAIN,
+        url=reverse(
+            "login", args=(signer.sign(user.username),)
+        )
     ))
 
     return JsonResponse({
