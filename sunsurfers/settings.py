@@ -137,7 +137,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-TASTYPIE_FULL_DEBUG = True
+if 'STATIC_ROOT' in os.environ:
+    STATIC_ROOT = os.environ['STATIC_ROOT']
+
+
+TASTYPIE_FULL_DEBUG = DEBUG
 
 TGAUTH_DOMAIN = os.environ['TGAUTH_DOMAIN']
 if TGAUTH_DOMAIN:
