@@ -65,15 +65,11 @@ def botapi(request, token):
 
 def update_location(msg):
 
-    user = auth.get_user_model().objects.get(msg['from']['username'])
+    user = auth.get_user_model().objects.get(username=msg['from']['username'])
 
-    try:
-        lp = LatestPoint.objects.get(user=user)
-    except LatestPoint.DoesNotExists:
-        lp = LatestPoint(user=user)
-
-    l = msg['location']
-    lp.point = 'POINT(%s %s)' % (l['longitude'], l['latitude'])
+    lp, created = LatestPoint.objects.get_or_create(user=user)
+    lp.point = 'POINT(%s %s)' % (msg['location']['longitude'],
+                                 msg['location']['latitude'])
     lp.save()
 
     return JsonResponse({
@@ -85,8 +81,6 @@ def update_location(msg):
 
 def start_cmd(request, msg):
 
-    user_info = msg['from']
-
     if msg['chat']['type'] != 'private':
         return JsonResponse({
             'method': 'sendMessage',
@@ -96,31 +90,27 @@ def start_cmd(request, msg):
         })
 
     user, created = auth.get_user_model().objects.get_or_create(
-        username=user_info['username']
+        username=msg['from']['username']
     )
-
-    reply = []
 
     if created:
 
-        user.first_name = user_info['first_name']
-        user.last_name = user_info.get('last_name')
+        user.first_name = msg['from']['first_name']
+        user.last_name = msg['from'].get('last_name')
 
         password = auth.get_user_model().objects.make_random_password()
         user.set_password(password)
 
         user.save()
 
-        reply.append("Добро пожаловать в Sunsurfers Map! :pray:")
-        reply.append("Для тебя создан новый аккаунт:")
-        reply.append("Логин - %s" % user.username)
-        reply.append("Пароль - %s" % password)
-        reply.append("")
-
         return JsonResponse({
             'method': 'sendMessage',
             'chat_id': msg['chat']['id'],
-            'text': '\n'.join(reply),
+            'text': """Добро пожаловать в Sunsurfers Map! :pray:
+Для тебя создан новый аккаунт:
+Логин - {username}
+Пароль - {password}
+""".format(username=user.username, password=password),
         })
 
     return JsonResponse({
@@ -132,8 +122,6 @@ def start_cmd(request, msg):
 
 def login_cmd(request, msg):
 
-    user_info = msg['from']
-
     if msg['chat']['type'] != 'private':
         return JsonResponse({
             'method': 'sendMessage',
@@ -142,22 +130,16 @@ def login_cmd(request, msg):
                     'а не публично в группе.',
         })
 
-    user = auth.get_user_model().objects.get(username=user_info['username'])
-
-    reply = []
-    reply.append("Ссылка для входа на сайт (действует 10 минут):")
-    reply.append("https://{domain}{url}".format(
-        domain=settings.TGAUTH_DOMAIN,
-        url=reverse(
-            "login", args=(signer.sign(user.username),)
-        )
-    ))
-
     return JsonResponse({
         'method': 'sendMessage',
         'chat_id': msg['chat']['id'],
-        'text': '\n'.join(reply),
-    })
+        'text': (
+            "Ссылка для входа на сайт (действует 10 минут):\n"
+            "https://{domain}{url}"
+        ).format(
+            domain=settings.TGAUTH_DOMAIN,
+            url=reverse("login", args=(signer.sign(msg['from']['username']),))
+        )})
 
 
 COMMANDS = {
