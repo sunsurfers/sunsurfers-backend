@@ -17,6 +17,6 @@ WORKDIR /usr/src/app
 COPY requirements.txt /usr/src/app/
 RUN pip3 install -r /usr/src/app/requirements.txt
 
-COPY . /usr/src/app
-
 CMD ["gunicorn", "--user", "www-data", "--worker-class", "gevent", "--access-logfile", "-", "--error-logfile", "-", "-b", "0.0.0.0:8000", "sunsurfers.wsgi:application"]
+
+COPY . /usr/src/app
