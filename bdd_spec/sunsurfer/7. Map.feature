@@ -25,3 +25,15 @@ Given I see on the map the circle with the number of overlayed users
 When I zoom in the map
 
 Then I overlay disappears and I see separate circles with avatars 
+
+Scenario "Point in the home city"
+
+Given I am in my home city
+When app update my location
+Then coordinates will be in the city center (not in my place)
+
+Scenario "Automataed update of the location"
+When new day is soming
+
+Then location and date should be updated
+
