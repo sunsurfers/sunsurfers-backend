@@ -42,12 +42,4 @@ When I open the app
 Then location and date should be updated
 
 
-Feature: Map
-  In order to connect with sunsurfers nearby
-	As an sun surfer
-	I want to see a map with sunsurfers who are in the area
-	
-	
-
-
 
