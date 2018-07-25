@@ -1,31 +1,32 @@
 Feature: CRUDing of user
-	As an admin
-	I want to manage all users in the application
+    As an admin
+    I want to manage all users in the application
 
-Scenario "Viewing all user"
+    Scenario: Viewing all user
 
-Given I am logged in as an administator in the admin panel
-and I am in the user view page
+        Given I am logged in as an administator in the admin panel
+        And I am in the user view page
 
-When I go to user index page
+        When I go to user index page
 
-Then I see all refistered user in the system with the following attributes: Name, Second Name and Telegram username
+        Then I see all refistered user in the system with the following attributes: Name, Second Name and Telegram username
 
-Scenario "Edit user info"
+    Scenario: Edit user info
 
-Given I am logged in as an administator in the admin panel
-and I am in the user view page
+        Given I am logged in as an administator in the admin panel
+        And I am in the user view page
 
-When Edit any attribute of the user
-and click the button Save
+        When Edit any attribute of the user
+        And click the button Save
 
-Then User info updated
+        Then User info updated
 
-Scenario "Delete user"
-Given I am logged in as an administator in the admin panel
-and I am in the user tab
+    Scenario: Delete user
 
-When Click the button Delete
+        Given I am logged in as an administator in the admin panel
+        And I am in the user tab
 
-Then System ask whether I really want to delete this user
-and user has been deleted after confirmation
+        When Click the button Delete
+
+        Then System ask whether I really want to delete this user
+        And user has been deleted after confirmation
