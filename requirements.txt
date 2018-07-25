@@ -8,6 +8,10 @@ psycopg2
 pyyaml
 requests
 
+# tests
+behave
+behave-django
+
 # deployment
 gunicorn
 gevent
