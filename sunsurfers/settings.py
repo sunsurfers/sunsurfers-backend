@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'tastypie',
 
     'behave_django',
+    'django_extensions',
 
     'django.contrib.gis',
     'django.contrib.admin',

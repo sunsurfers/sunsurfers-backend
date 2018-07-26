@@ -13,6 +13,9 @@ social-auth-app-django
 behave
 behave-django
 
+# misc
+django-extensions
+
 # deployment
 gunicorn
 gevent
