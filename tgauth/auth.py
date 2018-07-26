@@ -12,9 +12,7 @@ signer = TimestampSigner()
 class TokenBackend(object):
 
     def authenticate(self, token=None):
-
         if token:
-
             try:
                 username = signer.unsign(token, max_age=600)
                 logger.info("Authenticated %s", username)
@@ -23,7 +21,6 @@ class TokenBackend(object):
                 logger.info("Expired signature: %s", token)
             except BadSignature:
                 logger.warning("Bad token: %s", token, exc_info=True)
-
         return None
 
     def get_user(self, user_id):

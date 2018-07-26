@@ -11,6 +11,7 @@ from django.http import HttpResponseNotAllowed
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
 
 from tgauth.auth import signer
 from surfers.models import LatestPoint
@@ -69,7 +70,7 @@ def botapi(request, token):
                         'text': 'Обновление статуса пока не реализовано! :-)',
                     })
 
-            except:
+            except Exception:
                 logger.error("Failed processing %s:", msg, exc_info=True)
                 return JsonResponse({
                     'method': 'sendMessage',
@@ -113,11 +114,11 @@ def update_location(msg):
 def start_cmd(request, msg):
 
     info = (
-        "Текущий адрес карты - https://%s\n\n"
-        "Чтобы получить доступ - отправь /login\n\n"
-        "Чтобы поделиться со всеми своим местоположением просто отправь "
-        "его сюда. После этого оно появится на карте.\n\n"
-        "На текущий момент это всё! :pray:"
+        ":world_map: Карта сансёрферов - https://%s\n\n"
+        ":lock: Чтобы получить доступ - отправь /login\n\n"
+        ":round_pushpin: Чтобы поделиться со всеми своим местоположением просто отправь "
+        "его сюда. После этого оно появится на :world_map:.\n\n"
+        "Благодарим за интерес к использованию приложения! :pray:"
     ) % settings.TGAUTH_DOMAIN
 
     if msg['chat']['type'] != 'private':
@@ -133,33 +134,9 @@ def start_cmd(request, msg):
     )
 
     if created:
-
         user.first_name = msg['from']['first_name']
         user.last_name = msg['from'].get('last_name')
-
-        password = auth.get_user_model().objects.make_random_password()
-        user.set_password(password)
-
         user.save()
-
-        return JsonResponse({
-            'method': 'sendMessage',
-            'chat_id': msg['chat']['id'],
-            'reply_markup': {
-                'keyboard': [[{
-                    'text': 'Поделиться местоположением',
-                    'request_location': True,
-                }]],
-                'resize_keyboard': True,
-            },
-            'text': emojize("""Добро пожаловать в Sunsurfers Map! :pray:
-Для тебя создан новый аккаунт:
-Логин - {username}
-Пароль - {password}
-
-{info}
-""".format(username=user.username, password=password, info=info)),
-        })
 
     return JsonResponse({
         'method': 'sendMessage',
@@ -172,8 +149,7 @@ def start_cmd(request, msg):
             'resize_keyboard': True,
         },
         'text': emojize((
-            'Какие люди! :-) Привет, @{username}!\n\n'
-            'Напоминаю правила! :-)\n\n'
+            'Привет, @{username}!\n\n'
             '{info}'
         ).format(username=user.username, info=info)),
     })
@@ -189,15 +165,24 @@ def login_cmd(request, msg):
                     'а не публично в группе.',
         })
 
+    username = msg['from']['username']
+    user, created = get_user_model().objects.get_or_create(username=username)
+    if created:
+        user.first_name = msg['from']['first_name']
+        user.last_name = msg['from'].get('last_name')
+        user.save()
+        logger.info("Created user %s", username)
+
     return JsonResponse({
         'method': 'sendMessage',
         'chat_id': msg['chat']['id'],
+        'disable_web_page_preview': True,
         'text': (
             "Ссылка для входа на сайт (действует 10 минут):\n"
             "https://{domain}{url}"
         ).format(
             domain=settings.TGAUTH_DOMAIN,
-            url=reverse("login", args=(signer.sign(msg['from']['username']),))
+            url=reverse("login", args=[signer.sign(username)])
         )})
 
 
