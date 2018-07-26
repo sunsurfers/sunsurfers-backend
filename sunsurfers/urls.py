@@ -18,10 +18,14 @@ from django.contrib.gis import admin
 
 from surfers.api import v1_api
 
+from . import auth
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(v1_api.urls)),
     path('tg/', include('tgauth.urls')),
     path('', include('surfers.urls')),
+    path('social-auth/', include('social_django.urls', namespace='social')),
+    path('register-by-token/<backend>/', auth.register_by_access_token, 'register_by_access_token'),
 ]

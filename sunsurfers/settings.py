@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
 
     'django.contrib.auth',
+    'social_django',
+
     'surfers',
     'quests',
     'tgauth',
@@ -151,9 +153,21 @@ if TGAUTH_DOMAIN:
 TGAUTH_TOKEN = os.environ['TGAUTH_TOKEN']
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'tgauth.auth.TokenBackend',
 ]
+
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+
+SOCIAL_AUTH_FACEBOOK_KEY = os.getenv('SOCIAL_AUTH_FACEBOOK_KEY')
+SOCIAL_AUTH_FACEBOOK_SECRET = os.getenv('SOCIAL_AUTH_FACEBOOK_SECRET')
+# XXX: add these?
+# SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+# SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+#   'locale': 'ru_RU',
+#   'fields': 'id, name, email, age_range'
+# }
 
 MAPBOX_TOKEN = os.environ.get("MAPBOX_TOKEN")
 
