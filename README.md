@@ -37,19 +37,30 @@ psql sunsurfers <<< "create extension postgis"
 
 Create the database structure and load some initial users and quests for development:
 
-```
+```bash
 ./manage.py migrate
 ./manage.py loaddata initial_data
 ```
 
+Set some environment variables:
+
+```bash
+export SECRET_KEY=secret
+export TGAUTH_DOMAIN=127.0.0.1
+export TGAUTH_TOKEN=
+# it would be available on the website anyway
+export MAPBOX_TOKEN=pk.eyJ1IjoiZWktZ3JhZCIsImEiOiJjaWhnNW5qd3YwMDd1dHhtNHd1a2FuZ3k4In0.zkrRQneYHOJhLNAbsRuttw
+export DEBUG=1
+```
+
 And then you should be able to run the development server:
 
-```
+```bash
 ./manage.py runserver
 ```
 
-Which would be accessible on [http://localhost:8000/](http://localhost:8000).
+Which would be accessible on [http://127.0.0.1:8000/](http://127.0.0.1:8000).
 
-Admin interface: [/admin/](http://localhost:8000/admin/) (admin password: admin)
+Admin interface: [/admin/](http://127.0.0.1:8000/admin/) (admin password: admin)
 
-REST API: [/api/v1/](http://localhost:8000/api/v1/)
+REST API: [/api/v1/](http://127.0.0.1:8000/api/v1/)

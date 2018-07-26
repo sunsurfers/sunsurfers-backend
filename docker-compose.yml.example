@@ -1,5 +1,5 @@
 sunsurfers:
-    image: eigrad/sunsurfers
+    image: eigrad/sunsurfers-backend
     links:
     - postgres
     ports:
@@ -7,11 +7,11 @@ sunsurfers:
     environment:
         POSTGRES_HOST: postgres
         POSTGRES_USER: www-data
-        POSTGRES_PASSWORD: 'Dodjioj4swoa'
+        POSTGRES_PASSWORD: ''
 
 postgres:
     image: mdillon/postgis
     environment:
         POSTGRES_DB: sunsurfers
         POSTGRES_USER: www-data
-        POSTGRES_PASSWORD: 'Dodjioj4swoa'
+        POSTGRES_PASSWORD: ''

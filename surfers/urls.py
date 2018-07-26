@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import path
 
 from surfers import views
 
 
 urlpatterns = [
-    url(r'^$', views.sunmap, name='sunmap'),
-    url(r'^latest$', views.latest, name='latest_geojson'),
+    path('', views.sunmap, name='sunmap'),
+    path('latest', views.latest, name='latest_geojson'),
 ]

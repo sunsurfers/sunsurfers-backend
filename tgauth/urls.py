@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import path
 
 from tgauth import views
 
 
 urlpatterns = [
-    url(r'^webhook/(?P<token>.*)', views.botapi, name='webhook'),
-    url(r'^login/(?P<token>.*)', views.login, name='login'),
+    path('webhook/<token>', views.botapi, name='webhook'),
+    path('login/<token>', views.login, name='login'),
 ]

@@ -15,10 +15,9 @@ from surfers.models import LatestPoint
 def login_required(f):
     @wraps(f)
     def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return f(request, *args, **kwargs)
-        else:
+        if not request.user.is_authenticated:
             return HttpResponse('Log in first, please!', status=401)
+        return f(request, *args, **kwargs)
     return wrapper
 
 

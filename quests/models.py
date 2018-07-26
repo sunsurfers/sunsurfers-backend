@@ -13,11 +13,11 @@ class Quest(models.Model):
 
 class UserQuest(models.Model):
 
-    quest = models.ForeignKey(Quest)
-    surfer = models.ForeignKey(settings.AUTH_USER_MODEL)
+    quest = models.ForeignKey(Quest, on_delete=models.CASCADE)
+    surfer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    issued_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='issued_quests')
-    confirmed_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='confirmed_quests')
+    issued_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='issued_quests', on_delete=models.CASCADE)
+    confirmed_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='confirmed_quests', on_delete=models.CASCADE)
 
     date_opened = models.DateTimeField()
     date_start = models.DateTimeField()
@@ -43,7 +43,7 @@ class UserQuest(models.Model):
 
 class QuestMedia(models.Model):
 
-    surfer_quest = models.ForeignKey(UserQuest)
+    surfer_quest = models.ForeignKey(UserQuest, on_delete=models.CASCADE)
 
     class MediaType:
         PHOTO = 'PHOTO'
