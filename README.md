@@ -1,15 +1,11 @@
 Sunsurfers
 ==========
 
-We are the Sunsurfers, we live in the current moment - everyday, anytime. This
-application helps us to explore the world, to connect to each other, to be kind,
-to make a good deeds.
+We are the Sunsurfers community. We do live in the present moment - everyday and anytime. This application helps us to explore the world and connect to each other, to be kind and do good deeds.
 
-What's that about? It is about travelling, adventures, inspiration and
-self-realization.
+What is it about? It’s about traveling, adventures, inspiration and self-realization.
 
-This app will help you to find interesting places and open people near you and
-around the world. It will try to make you the Sunsurfer.
+This app will help you to find amazing places and broad-minded open people in your proximity as well as around the world. It will help you to become a Sunsurfer.
 
 Run for Development
 -------------------
